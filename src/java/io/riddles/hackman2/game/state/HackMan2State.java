@@ -42,11 +42,13 @@ public class HackMan2State extends AbstractState<HackMan2PlayerState> {
     public HackMan2State(ArrayList<HackMan2PlayerState> playerStates, HackMan2Board board) {
         super(null, playerStates, 0);
         this.board = board;
+        this.snippetsCollected = 0;
     }
 
     public HackMan2State(HackMan2State previousState, ArrayList<HackMan2PlayerState> playerStates, int roundNumber) {
         super(previousState, playerStates, roundNumber);
-        this.board = new HackMan2Board(previousState.getBoard());
+        this.board = new HackMan2Board(previousState.board);
+        this.snippetsCollected = previousState.snippetsCollected;
     }
 
     public HackMan2State createNextState(int roundNumber) {
