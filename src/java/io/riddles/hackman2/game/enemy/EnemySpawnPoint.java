@@ -33,7 +33,7 @@ import io.riddles.hackman2.game.HackMan2Object;
 public class EnemySpawnPoint extends HackMan2Object {
 
     private int type;
-    private Integer spawnTime;
+    public Integer spawnTime;
 
     public EnemySpawnPoint(Point coordinate, int type) {
         super(coordinate);

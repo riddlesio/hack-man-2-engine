@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import io.riddles.hackman2.game.HackMan2ObjectSerializer;
+import io.riddles.hackman2.game.item.Bomb;
 import io.riddles.hackman2.game.item.Snippet;
 import io.riddles.javainterface.serialize.Serializer;
 
@@ -62,12 +63,21 @@ public class HackMan2StateSerializer implements Serializer<HackMan2State> {
         state.getBoard().getSnippets().forEach(
                 (key, snippet) -> collectibleArray.put(objectSerializer.traverseToJson(snippet))
         );
-        state.getBoard().getBombs().forEach(
-                (key, bomb) -> bombArray.put(objectSerializer.traverseToJson(bomb))
-        );
-        state.getBoard().getEnemies().forEach(
-                enemy -> enemyArray.put(objectSerializer.traverseToJson(enemy))
-        );
+        state.getBoard().getBombs().forEach((key, bomb) -> {
+            JSONObject bombObj = objectSerializer.traverseToJson(bomb);
+            bombObj.put("ticks", bomb.getTicks());
+            bombArray.put(bombObj);
+        });
+        state.getBoard().getEnemies().forEach(enemy -> {
+            JSONObject enemyObj = objectSerializer.traverseToJson(enemy);
+            enemyObj.put("type", enemy.getType());
+            enemyObj.put("move", enemy.getDirection());
+
+            if (!enemy.isAlive()) {
+                enemyObj.put("death", enemy.getDeathType());
+            }
+            enemyArray.put(enemyObj);
+        });
 
         stateObj.put("round", state.getRoundNumber());
         stateObj.put("players", playerArray);

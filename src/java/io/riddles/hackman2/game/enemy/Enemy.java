@@ -20,7 +20,6 @@
 package io.riddles.hackman2.game.enemy;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 import io.riddles.hackman2.game.HackMan2Object;
 import io.riddles.hackman2.game.move.MoveType;
@@ -37,7 +36,8 @@ public class Enemy extends HackMan2Object {
 
     private int id;
     private int type;
-    private Point coordinate;
+    private boolean isAlive;
+    private EnemyDeath deathType;
     private MoveType direction;
     private AbstractEnemyAI enemyAI;
 
@@ -45,6 +45,7 @@ public class Enemy extends HackMan2Object {
         super(coordinate);
         this.id = id;
         this.type = type;
+        this.isAlive = true;
 
         switch (type) {
             case 0:
@@ -65,8 +66,11 @@ public class Enemy extends HackMan2Object {
     public Enemy(Enemy enemy) {
         super(enemy);
         this.id = enemy.id;
+        this.type = enemy.type;
         this.direction = enemy.direction;
         this.enemyAI = enemy.enemyAI;
+        this.isAlive = enemy.isAlive;
+        this.deathType = enemy.deathType;
     }
 
     public String toString() {
@@ -74,19 +78,33 @@ public class Enemy extends HackMan2Object {
     }
 
     public void performMovement(HackMan2State state) {
-        setCoordinate(this.enemyAI.transform(this, state));
+        Point c = this.enemyAI.transform(this, state);
+        setCoordinate(c);
+    }
+
+    public void kill(HackMan2State state, EnemyDeath deathType) {
+        this.isAlive = false;
+        this.deathType = deathType;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public Point getCoordinate() {
-        return this.coordinate;
+    public int getType() {
+        return this.type;
     }
 
     public MoveType getDirection() {
         return this.direction;
+    }
+
+    public boolean isAlive() {
+        return this.isAlive;
+    }
+
+    public EnemyDeath getDeathType() {
+        return this.deathType;
     }
 
     private void setCoordinate(Point coordinate) {

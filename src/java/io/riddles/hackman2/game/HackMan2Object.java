@@ -30,7 +30,7 @@ import java.awt.Point;
  */
 public abstract class HackMan2Object {
 
-    private Point coordinate;
+    protected Point coordinate;
 
     public HackMan2Object(Point coordinate) {
         this.coordinate = coordinate;

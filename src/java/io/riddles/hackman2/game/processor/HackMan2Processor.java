@@ -80,6 +80,9 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
         HackMan2State nextState = inputState.createNextState(roundNumber);
         HackMan2Board board = nextState.getBoard();
 
+        // Clean up enemies from previous round (i.e. remove dead ones)
+        board.cleanUpEnemies();
+
         // Send updates and get all moves
         for (HackMan2PlayerState playerState : nextState.getPlayerStates()) {
             HackMan2Player player = getPlayer(playerState.getPlayerId());
@@ -140,6 +143,7 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
         Point oldCoordinate = playerState.getCoordinate();
         Point newCoordinate = move.getMoveType().getCoordinateAfterMove(oldCoordinate);
         playerState.setCoordinate(newCoordinate);
+        playerState.setDirection(move.getMoveType());
 
         // Drop bomb
         if (move.getBombTicks() != null) {

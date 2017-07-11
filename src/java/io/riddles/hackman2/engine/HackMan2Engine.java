@@ -28,7 +28,9 @@ import java.util.UUID;
 import io.riddles.hackman2.game.HackMan2Serializer;
 import io.riddles.hackman2.game.board.HackMan2Board;
 import io.riddles.hackman2.game.enemy.EnemySpawnPoint;
+import io.riddles.hackman2.game.move.ActionType;
 import io.riddles.hackman2.game.player.HackMan2Player;
+import io.riddles.hackman2.game.player.CharacterType;
 import io.riddles.hackman2.game.processor.HackMan2Processor;
 import io.riddles.hackman2.game.state.HackMan2PlayerState;
 import io.riddles.hackman2.game.state.HackMan2State;
@@ -66,12 +68,12 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         configuration.put("snippetSpawnCount", 1);
         configuration.put("initialEnemyCount", 0);
         configuration.put("enemySpawnDelay", 0);
-        configuration.put("enemySpawnRate", 4);
+        configuration.put("enemySpawnRate", 1); // 4
         configuration.put("enemySnippetLoss", 4);
         configuration.put("enemySpawnTime", 2);
-        configuration.put("mapBombCount", 0);
-        configuration.put("bombSpawnDelay", 2);
-        configuration.put("bombSpawnRate", 6);
+        configuration.put("mapBombCount", 0);  // 0
+        configuration.put("bombSpawnDelay", 2);  // 2
+        configuration.put("bombSpawnRate", 6);  // 6
         configuration.put("bombSnippetLoss", 4);
         configuration.put("bombMinTicks", 2);
         configuration.put("bombMaxTicks", 5);
@@ -110,6 +112,9 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
     protected HackMan2State getInitialState() {
         setRandomSeed();
 
+        // Ask which character the bot wants to play as
+        requestPlayerCharacters();
+
         int width = configuration.getInt("fieldWidth");
         int height = configuration.getInt("fieldHeight");
         String layout = getDefaultFieldLayout();
@@ -128,7 +133,12 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
             playerStates.add(playerState);
         }
 
-        return new HackMan2State(playerStates, board);
+        HackMan2State initialState = new HackMan2State(playerStates, board);
+
+        // Spawn initial items
+        board.spawnInitialObjects(initialState);
+
+        return initialState;
     }
 
     @Override
@@ -175,6 +185,19 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         spawnPoints.add(new EnemySpawnPoint(new Point(0, 14), 3));
 
         return spawnPoints;
+    }
+
+    private void requestPlayerCharacters() {
+        for (HackMan2Player player : this.playerProvider.getPlayers()) {
+            String response = player.requestMove(ActionType.CHARACTER);
+            CharacterType character = CharacterType.fromString(response);
+
+            if (character == null) {
+                character = CharacterType.getRandomCharacter();
+            }
+
+            player.setCharacterType(character);
+        }
     }
 
     private void setRandomSeed() {

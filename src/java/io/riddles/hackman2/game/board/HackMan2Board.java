@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import io.riddles.hackman2.engine.HackMan2Engine;
 import io.riddles.hackman2.game.HackMan2Object;
 import io.riddles.hackman2.game.enemy.Enemy;
+import io.riddles.hackman2.game.enemy.EnemyDeath;
 import io.riddles.hackman2.game.enemy.EnemySpawnPoint;
 import io.riddles.hackman2.game.item.Bomb;
 import io.riddles.hackman2.game.item.Snippet;
@@ -110,6 +111,7 @@ public class HackMan2Board extends Board {
             Point coordinate = playerState.getCoordinate();
             outFields[coordinate.x][coordinate.y] += playerState.toString() + ";";
         }
+
         this.enemySpawnPoints.forEach(spawnPoint -> addObjectToOutFields(outFields, spawnPoint));
         this.enemies.forEach(enemy -> addObjectToOutFields(outFields, enemy));
         this.bombs.forEach((key, bomb) -> addObjectToOutFields(outFields, bomb));
@@ -133,6 +135,15 @@ public class HackMan2Board extends Board {
         return output.toString();
     }
 
+    public void spawnInitialObjects(HackMan2State state) {
+        for (int i = 0; i < HackMan2Engine.configuration.getInt("mapSnippetCount"); i++) {
+            spawnSnippet(state);
+        }
+        for (int i = 0; i < HackMan2Engine.configuration.getInt("mapBombCount"); i++) {
+            spawnBomb(state);
+        }
+    }
+
     public void validateMove(HackMan2PlayerState playerState, HackMan2Move move) {
         if (move.isInvalid()) return;
 
@@ -143,6 +154,12 @@ public class HackMan2Board extends Board {
         if (!isCoordinateValid(newCoordinate)) {
             move.setException(new InvalidMoveException("Can't move this direction"));
         }
+    }
+
+    public void cleanUpEnemies() {
+        this.enemies = this.enemies.stream()
+                .filter(Enemy::isAlive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public void moveEnemies(HackMan2State state) {
@@ -161,7 +178,7 @@ public class HackMan2Board extends Board {
     }
 
     public void spawnObjects(HackMan2State state) {
-        spawnEnemies();
+        spawnEnemies(state);
         startEnemySpawn(state);
         spawnSnippets(state);
         spawnBombs(state);
@@ -215,7 +232,7 @@ public class HackMan2Board extends Board {
         this.bombs.forEach((key, bomb) -> bomb.tick());
         ArrayList<String> explodingCoordinates = explodeBombs();
 
-        blastEnemies(explodingCoordinates);
+        blastEnemies(state, explodingCoordinates);
         blastPlayers(state, explodingCoordinates);
     }
 
@@ -245,7 +262,6 @@ public class HackMan2Board extends Board {
     }
 
     private void swapCollideWithEnemies(HackMan2State previousState, HackMan2State state) {
-        ArrayList<Enemy> killedEnemies = new ArrayList<>();
 
         for (HackMan2PlayerState playerState : state.getPlayerStates()) {
             Point coord = playerState.getCoordinate();
@@ -262,28 +278,20 @@ public class HackMan2Board extends Board {
 
                 if (coord.equals(previousEnemyCoord) && enemyCoord.equals(previousCoord)) {
                     hitPlayerWithEnemy(playerState);
-                    killedEnemies.add(enemy);
+                    enemy.kill(state, EnemyDeath.ATTACK);
                 }
             }
         }
-
-        // Kill enemies at the end so other players can still hit them
-        killedEnemies.forEach(this::killEnemy);
     }
 
     private void positionCollideWithEnemies(HackMan2State state) {
-        ArrayList<Enemy> killedEnemies = new ArrayList<>();
-
         state.getPlayerStates().forEach(playerState ->
                 state.getBoard().getEnemies().stream()
                         .filter(enemy -> enemy.getCoordinate().equals(playerState.getCoordinate()))
                         .forEach(enemy -> {
                             hitPlayerWithEnemy(playerState);
-                            killedEnemies.add(enemy);
+                            enemy.kill(state, EnemyDeath.ATTACK);
                         }));
-
-        // Kill enemies at the end so other players can still hit them
-        killedEnemies.forEach(this::killEnemy);
     }
 
     protected ArrayList<String> explodeBombs() {
@@ -291,7 +299,7 @@ public class HackMan2Board extends Board {
         ArrayList<Bomb> explodedBombs = new ArrayList<>();
 
         this.bombs.entrySet().stream()
-                .filter(e -> e.getValue().getTicks() == 0)
+                .filter(e -> e.getValue().getTicks() != null && e.getValue().getTicks() == 0)
                 .forEach(e -> explodeBomb(e.getValue(), explodingCoordinates, explodedBombs));
 
         // Remove all exploded bombs at the end
@@ -331,10 +339,10 @@ public class HackMan2Board extends Board {
         explodeBomb(nextBomb, explodingCoordinates, explodingBombs);
     }
 
-    private void blastEnemies(ArrayList<String> explodingCoordinates) {
-        this.enemies = this.enemies.stream()
-                .filter(enemy -> !explodingCoordinates.contains(enemy.getCoordinate().toString()))
-                .collect(Collectors.toCollection(ArrayList::new));
+    private void blastEnemies(HackMan2State state, ArrayList<String> explodingCoordinates) {
+        this.enemies.stream()
+                .filter(enemy -> explodingCoordinates.contains(enemy.getCoordinate().toString()))
+                .forEach(enemy -> enemy.kill(state, EnemyDeath.BOMBED));
     }
 
     private void blastPlayers(HackMan2State state, ArrayList<String> explodingCoordinates) {
@@ -358,10 +366,6 @@ public class HackMan2Board extends Board {
         for (int n = 0; n < spawnCount; n++) {
             spawnSnippet(state);
         }
-    }
-
-    private void killEnemy(Enemy enemy) {
-        this.enemies.remove(enemy);
     }
 
     private void addExplodingCoordinate(Point coordinate, ArrayList<String> explodingCoordinates) {
@@ -410,7 +414,7 @@ public class HackMan2Board extends Board {
                 .orElse(null);
     }
 
-    private void spawnEnemies() {
+    private void spawnEnemies(HackMan2State state) {
         for (EnemySpawnPoint spawnPoint : this.enemySpawnPoints) {
             spawnPoint.reduceSpawnTime();
 
@@ -427,12 +431,16 @@ public class HackMan2Board extends Board {
     private void startEnemySpawn(HackMan2State state) {
         Configuration config = HackMan2Engine.configuration;
         int snippetsCollected = state.getSnippetsCollected();
+        int spawningSpawnPoints = (int) this.enemySpawnPoints.stream()
+                .filter(sp -> sp.spawnTime != null)
+                .count();
+        int totalEnemies = spawningSpawnPoints + this.spawnedEnemies;
         int enemiesToSpawn = ((snippetsCollected - config.getInt("enemySpawnDelay")) /
-                config.getInt("enemySpawnRate")) - this.spawnedEnemies;
+                config.getInt("enemySpawnRate")) - totalEnemies;
 
         for (int id = this.spawnedEnemies; id < this.spawnedEnemies + enemiesToSpawn; id++) {
-            int spawnType = this.spawnedEnemies % 4;
-            this.enemySpawnPoints.get(spawnType).setSpawnTime(config.getInt("enemySpawnTime"));
+            int spawnType = totalEnemies  % 4;
+            this.enemySpawnPoints.get(spawnType).setSpawnTime(config.getInt("enemySpawnTime") + 1);
         }
     }
 

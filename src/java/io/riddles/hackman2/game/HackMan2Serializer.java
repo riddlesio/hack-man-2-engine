@@ -22,6 +22,7 @@ package io.riddles.hackman2.game;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import io.riddles.hackman2.game.player.HackMan2Player;
 import io.riddles.hackman2.game.processor.HackMan2Processor;
 import io.riddles.hackman2.game.state.HackMan2State;
 import io.riddles.hackman2.game.state.HackMan2StateSerializer;
@@ -43,6 +44,15 @@ public class HackMan2Serializer extends AbstractGameSerializer<HackMan2Processor
 
         game = addDefaultJSON(initialState, game, processor);
 
+        JSONArray characters = new JSONArray();
+        for (HackMan2Player player : processor.getPlayerProvider().getPlayers()) {
+            JSONObject characterObj = new JSONObject();
+            characterObj.put("id", player.getId());
+            characterObj.put("type", player.getCharacterType());
+
+            characters.put(characterObj);
+        }
+
         JSONArray states = new JSONArray();
         states.put(stateSerializer.traverseToJson(initialState));
 
@@ -52,6 +62,7 @@ public class HackMan2Serializer extends AbstractGameSerializer<HackMan2Processor
             states.put(stateSerializer.traverseToJson(state));
         }
 
+        game.put("characters", characters);
         game.put("states", states);
 
         return game.toString();

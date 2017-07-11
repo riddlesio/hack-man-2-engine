@@ -21,6 +21,8 @@ package io.riddles.hackman2.game.move;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.riddles.hackman2.engine.HackMan2Engine;
 
@@ -37,6 +39,14 @@ public enum MoveType {
     LEFT,
     RIGHT,
     PASS;
+
+    private static final Map<String, MoveType> TYPE_MAP = new HashMap<>();
+
+    static {
+        for (MoveType moveType : values()) {
+            TYPE_MAP.put(moveType.toString(), moveType);
+        }
+    }
 
     public static ArrayList<MoveType> getMovingMoveTypes() {
         ArrayList<MoveType> movingMoveTypes = new ArrayList<>();
@@ -85,14 +95,8 @@ public enum MoveType {
         return new Point(coordinate.x + direction.x, coordinate.y + direction.y);
     }
 
-    public static MoveType fromString(String input) {
-        for (MoveType moveType : MoveType.values()) {
-            if (moveType.toString().equalsIgnoreCase(input)) {
-                return moveType;
-            }
-        }
-
-        return null;
+    public static MoveType fromString(String string) {
+        return TYPE_MAP.get(string);
     }
 
     public String toString() {

@@ -95,6 +95,10 @@ public class HackMan2PlayerState extends AbstractPlayerState<HackMan2Move> {
         return this.isAlive;
     }
 
+    public void setDirection(MoveType direction) {
+        this.direction = direction;
+    }
+
     public MoveType getDirection() {
         return this.direction;
     }

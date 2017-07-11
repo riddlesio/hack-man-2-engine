@@ -30,7 +30,17 @@ import io.riddles.javainterface.game.player.AbstractPlayer;
  */
 public class HackMan2Player extends AbstractPlayer {
 
+    private CharacterType characterType;
+
     public HackMan2Player(int id) {
         super(id);
+    }
+
+    public void setCharacterType(CharacterType characterType) {
+        this.characterType = characterType;
+    }
+
+    public CharacterType getCharacterType() {
+        return this.characterType;
     }
 }

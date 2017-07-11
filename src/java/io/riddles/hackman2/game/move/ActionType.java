@@ -27,6 +27,7 @@ package io.riddles.hackman2.game.move;
  * @author Jim van Eeden - jim@riddles.io
  */
 public enum ActionType {
+    CHARACTER,
     MOVE;
 
     @Override
