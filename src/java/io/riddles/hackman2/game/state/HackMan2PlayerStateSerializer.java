@@ -21,7 +21,6 @@ package io.riddles.hackman2.game.state;
 
 import org.json.JSONObject;
 
-import io.riddles.hackman2.game.move.HackMan2MoveSerializer;
 import io.riddles.javainterface.serialize.Serializer;
 
 /**
@@ -44,8 +43,6 @@ public class HackMan2PlayerStateSerializer implements Serializer<HackMan2PlayerS
     }
 
     private JSONObject visitPlayerState(HackMan2PlayerState playerState) {
-        HackMan2MoveSerializer moveSerializer = new HackMan2MoveSerializer();
-
         JSONObject playerStateObj = new JSONObject();
 
         playerStateObj.put("id", playerState.getPlayerId());
@@ -55,8 +52,7 @@ public class HackMan2PlayerStateSerializer implements Serializer<HackMan2PlayerS
         playerStateObj.put("score", playerState.getSnippets());
 
         if (playerState.getMove() != null) {
-            JSONObject moveObj = moveSerializer.traverseToJson(playerState.getMove());
-            playerStateObj.put("move", moveObj);
+            playerStateObj.put("move", playerState.getMove().getMoveType());
         } else {
             playerStateObj.put("move", JSONObject.NULL);
         }
