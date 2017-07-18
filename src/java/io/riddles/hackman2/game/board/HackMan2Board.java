@@ -52,12 +52,14 @@ public class HackMan2Board extends Board {
     private ArrayList<Enemy> enemies;
     private HashMap<String, Bomb> bombs;
     private HashMap<String, Snippet> snippets;
+    private HashMap<String, Gate> gates;
     private ArrayList<EnemySpawnPoint> enemySpawnPoints;
 
     private int spawnedEnemies;
     private int spawnedBombs;
 
-    public HackMan2Board(int width, int height, String layout, ArrayList<EnemySpawnPoint> enemySpawnPoints) {
+    public HackMan2Board(int width, int height, String layout,
+                         ArrayList<EnemySpawnPoint> enemySpawnPoints, ArrayList<Gate> gates) {
         super(width, height, layout);
 
         this.enemySpawnPoints = enemySpawnPoints;
@@ -65,13 +67,17 @@ public class HackMan2Board extends Board {
         this.enemies = new ArrayList<>();
         this.bombs = new HashMap<>();
         this.snippets = new HashMap<>();
+        this.gates = new HashMap<>();
         this.spawnedEnemies = 0;
         this.spawnedBombs = 0;
+
+        gates.forEach(gate -> this.gates.put(gate.toString(), gate));
     }
 
     public HackMan2Board(HackMan2Board board) {
         super(board.getWidth(), board.getHeight(), board.getLayout());
         this.enemySpawnPoints = board.enemySpawnPoints;
+        this.gates = board.gates;
         this.spawnedEnemies = board.spawnedEnemies;
         this.spawnedBombs = board.spawnedBombs;
 
@@ -113,6 +119,7 @@ public class HackMan2Board extends Board {
         }
 
         this.enemySpawnPoints.forEach(spawnPoint -> addObjectToOutFields(outFields, spawnPoint));
+        this.gates.forEach((key, gate) -> addObjectToOutFields(outFields, gate));
         this.enemies.forEach(enemy -> addObjectToOutFields(outFields, enemy));
         this.bombs.forEach((key, bomb) -> addObjectToOutFields(outFields, bomb));
         this.snippets.forEach((key, snippet) -> addObjectToOutFields(outFields, snippet));
@@ -149,11 +156,23 @@ public class HackMan2Board extends Board {
 
         MoveType moveType = move.getMoveType();
         Point oldCoordinate = playerState.getCoordinate();
-        Point newCoordinate = moveType.getCoordinateAfterMove(oldCoordinate);
+        Point newCoordinate = getCoordinateAfterMove(moveType, oldCoordinate);
 
         if (!isCoordinateValid(newCoordinate)) {
             move.setException(new InvalidMoveException("Can't move this direction"));
         }
+    }
+
+    public Point getCoordinateAfterMove(MoveType moveType, Point coordinate) {
+        Gate gate = this.gates.get(coordinate.toString());
+
+        // Move through gate
+        if (gate != null && gate.getEntry() == moveType) {
+            return gate.getLinkedGate().getCoordinate();
+        }
+
+        // Normal move
+        return moveType.getCoordinateAfterMove(coordinate);
     }
 
     public void cleanUpEnemies() {
@@ -178,7 +197,7 @@ public class HackMan2Board extends Board {
     }
 
     public void spawnObjects(HackMan2State state) {
-        spawnEnemies(state);
+        spawnEnemies();
         startEnemySpawn(state);
         spawnSnippets(state);
         spawnBombs(state);
@@ -414,7 +433,7 @@ public class HackMan2Board extends Board {
                 .orElse(null);
     }
 
-    private void spawnEnemies(HackMan2State state) {
+    private void spawnEnemies() {
         for (EnemySpawnPoint spawnPoint : this.enemySpawnPoints) {
             spawnPoint.reduceSpawnTime();
 
@@ -440,7 +459,7 @@ public class HackMan2Board extends Board {
 
         for (int id = this.spawnedEnemies; id < this.spawnedEnemies + enemiesToSpawn; id++) {
             int spawnType = totalEnemies  % 4;
-            this.enemySpawnPoints.get(spawnType).setSpawnTime(config.getInt("enemySpawnTime") + 1);
+            this.enemySpawnPoints.get(spawnType).setSpawnTime(config.getInt("enemySpawnTime"));
         }
     }
 

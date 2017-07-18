@@ -141,7 +141,7 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
     private void executePlayerMove(HackMan2Board board, HackMan2PlayerState playerState, HackMan2Move move) {
         // Move player
         Point oldCoordinate = playerState.getCoordinate();
-        Point newCoordinate = move.getMoveType().getCoordinateAfterMove(oldCoordinate);
+        Point newCoordinate = board.getCoordinateAfterMove(move.getMoveType(), oldCoordinate);
         playerState.setCoordinate(newCoordinate);
         playerState.setDirection(move.getMoveType());
 

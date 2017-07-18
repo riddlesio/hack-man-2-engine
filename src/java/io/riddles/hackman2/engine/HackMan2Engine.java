@@ -26,9 +26,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import io.riddles.hackman2.game.HackMan2Serializer;
+import io.riddles.hackman2.game.board.Gate;
 import io.riddles.hackman2.game.board.HackMan2Board;
 import io.riddles.hackman2.game.enemy.EnemySpawnPoint;
 import io.riddles.hackman2.game.move.ActionType;
+import io.riddles.hackman2.game.move.MoveType;
 import io.riddles.hackman2.game.player.HackMan2Player;
 import io.riddles.hackman2.game.player.CharacterType;
 import io.riddles.hackman2.game.processor.HackMan2Processor;
@@ -68,9 +70,9 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         configuration.put("snippetSpawnCount", 1);
         configuration.put("initialEnemyCount", 0);
         configuration.put("enemySpawnDelay", 0);
-        configuration.put("enemySpawnRate", 1); // 4
+        configuration.put("enemySpawnRate", 4); // 4
         configuration.put("enemySnippetLoss", 4);
-        configuration.put("enemySpawnTime", 2);
+        configuration.put("enemySpawnTime", 3);
         configuration.put("mapBombCount", 0);  // 0
         configuration.put("bombSpawnDelay", 2);  // 2
         configuration.put("bombSpawnRate", 6);  // 6
@@ -119,9 +121,10 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         int height = configuration.getInt("fieldHeight");
         String layout = getDefaultFieldLayout();
         ArrayList<EnemySpawnPoint> enemySpawnPoints = getEnemySpawnPoints();
+        ArrayList<Gate> gates = getGates();
 
         // Create board
-        HackMan2Board board = new HackMan2Board(width, height, layout, enemySpawnPoints);
+        HackMan2Board board = new HackMan2Board(width, height, layout, enemySpawnPoints, gates);
 
         // Create player states
         ArrayList<HackMan2PlayerState> playerStates = new ArrayList<>();
@@ -185,6 +188,21 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         spawnPoints.add(new EnemySpawnPoint(new Point(0, 14), 3));
 
         return spawnPoints;
+    }
+
+    private ArrayList<Gate> getGates() {
+        ArrayList<Gate> gates = new ArrayList<>();
+
+        Gate gate1 = new Gate(new Point(0, 7), MoveType.LEFT);
+        Gate gate2 = new Gate(new Point(18, 7), MoveType.RIGHT);
+
+        gate1.setLinkedGate(gate2);
+        gate2.setLinkedGate(gate1);
+
+        gates.add(gate1);
+        gates.add(gate2);
+
+        return gates;
     }
 
     private void requestPlayerCharacters() {

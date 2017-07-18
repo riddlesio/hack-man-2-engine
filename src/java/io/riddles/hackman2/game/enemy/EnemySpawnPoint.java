@@ -44,10 +44,10 @@ public class EnemySpawnPoint extends HackMan2Object {
     @Override
     public String toString() {
         if (this.spawnTime == null || this.spawnTime == 0) {
-            return "e";
+            return "S";
         }
 
-        return String.format("e%d", this.spawnTime);
+        return String.format("S%d", this.spawnTime);
     }
 
     public void setSpawnTime(Integer spawnTime) {
