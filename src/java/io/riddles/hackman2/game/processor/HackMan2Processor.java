@@ -64,10 +64,29 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
     public Integer getWinnerId(HackMan2State state) {
         ArrayList<HackMan2PlayerState> alivePlayers = state.getAlivePlayers();
 
-        return alivePlayers.stream()
-                .max(Comparator.comparingInt(HackMan2PlayerState::getSnippets))
-                .map(AbstractPlayerState::getPlayerId)
-                .orElse(null);
+        if (alivePlayers.size() == 0) {
+            return null;
+        } else if (alivePlayers.size() == 1) {
+            return alivePlayers.get(0).getPlayerId();
+        }
+
+        ArrayList<HackMan2PlayerState> winners = new ArrayList<>();
+        int maxSnippets = -1;
+        for (HackMan2PlayerState playerState : alivePlayers) {
+            if (playerState.getSnippets() > maxSnippets) {
+                maxSnippets = playerState.getSnippets();
+                winners.clear();
+                winners.add(playerState);
+            } else if (playerState.getSnippets() == maxSnippets) {
+                winners.add(playerState);
+            }
+        }
+
+        if (winners.size() == 1) {
+            return winners.get(0).getPlayerId();
+        }
+
+        return null;
     }
 
     @Override
