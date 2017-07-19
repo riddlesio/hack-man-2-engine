@@ -32,7 +32,7 @@ import io.riddles.hackman2.game.state.HackMan2State;
  * io.riddles.hackman2.game.enemy.LeverAI - Created on 8-6-17
  *
  * This enemy AI will always move to a point that is the vector
- * from the closest player and the closest other enemy to that player
+ * from the enemy closest to the closest player, to that closest player
  * times two.
  *
  * @author Jim van Eeden - jim@riddles.io
@@ -65,10 +65,13 @@ public class LeverAI extends AbstractEnemyAI {
         Point playerCoord = closestPlayer.getCoordinate();
         Point enemyCoord = closestEnemy.getCoordinate();
         Point leverVector = new Point(
-                (playerCoord.x - enemyCoord.x) * 2,
-                (playerCoord.y - enemyCoord.y) * 2
+                playerCoord.x - enemyCoord.x,
+                playerCoord.y - enemyCoord.y
         );
-        Point goalPosition = new Point(coordinate.x + leverVector.x, coordinate.y + leverVector.y);
+        Point goalPosition = new Point(
+                playerCoord.x + leverVector.x,
+                playerCoord.y + leverVector.y
+        );
 
         return transformToGoal(coordinate, goalPosition, availableDirections);
     }

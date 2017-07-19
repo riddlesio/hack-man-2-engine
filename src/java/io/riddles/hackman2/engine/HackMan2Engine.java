@@ -63,7 +63,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
     protected Configuration getDefaultConfiguration() {
         Configuration configuration = new Configuration();
 
-        configuration.put("maxRounds", 250);
+        configuration.put("maxRounds", 250); // 250
         configuration.put("playerSnippetCount", 0);
         configuration.put("mapSnippetCount", 2);
         configuration.put("snippetSpawnRate", 8);
@@ -75,7 +75,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         configuration.put("enemySpawnTime", 3);
         configuration.put("mapBombCount", 0);  // 0
         configuration.put("bombSpawnDelay", 2);  // 2
-        configuration.put("bombSpawnRate", 6);  // 6
+        configuration.put("bombSpawnRate", 5);  // 5
         configuration.put("bombSnippetLoss", 4);
         configuration.put("bombMinTicks", 2);
         configuration.put("bombMaxTicks", 5);

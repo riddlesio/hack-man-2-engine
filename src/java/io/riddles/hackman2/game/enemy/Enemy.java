@@ -116,7 +116,7 @@ public class Enemy extends HackMan2Object {
         if (newCoordinate.x > oldCoordinate.x) return MoveType.RIGHT;
         if (newCoordinate.x < oldCoordinate.x) return MoveType.LEFT;
         if (newCoordinate.y > oldCoordinate.y) return MoveType.DOWN;
-        if (newCoordinate.y < oldCoordinate.y) return MoveType.DOWN;
+        if (newCoordinate.y < oldCoordinate.y) return MoveType.UP;
 
         return null;
     }
