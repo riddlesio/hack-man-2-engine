@@ -51,7 +51,7 @@ public class HackMan2PlayerStateSerializer implements Serializer<HackMan2PlayerS
         playerStateObj.put("bombs", playerState.getBombs());
         playerStateObj.put("score", playerState.getSnippets());
 
-        if (playerState.getMove() != null) {
+        if (playerState.getMove() != null && !playerState.getMove().isInvalid()) {
             playerStateObj.put("move", playerState.getMove().getMoveType());
         } else {
             playerStateObj.put("move", JSONObject.NULL);
