@@ -1,5 +1,5 @@
-# Hack-man 2 game engine
-This repository contains the engine for the Booking.com Hack-man 2 game for the Riddles.io platform.
+# Ms. Hack-man game engine
+This repository contains the engine for the Booking.com Ms. Hack-man game for the Riddles.io platform.
 
 ## Setting up
 
@@ -25,20 +25,23 @@ accessible:
 ## Building the engine
 
 Use Gradle to build a .jar of the engine. Go to Tasks -> build -> jar.  
-The .jar file can be found at `build/libs/hackman2-engine-java-1.0.0.jar`.
+The .jar file can be found at `build/libs/`.
 
 ## Running 
 
-Running is handled by the GameWrapper. This application handles all communication between
+Running is handled by the MatchWrapper. This application handles all communication between
 the engine and bots and stores the results of the match. To run, firstly edit the 
 `wrapper-commands.json` file. This should be pretty self-explanatory. Just change the command
 fields to the right values to run the engine and the bots. In the example, the starterbot
 is run twice, plus the command for the engine built in the previous step.
  
- To run the GameWrapper, use the following command (Linux):
- ````
- java -jar game-wrapper.jar "$(cat wrapper-commands.json)"
- ````
- 
- *Note: if running on other systems, find how to put the content of wrapper-commands.json as
- argument when running the game-wrapper.jar*
+To run the MatchWrapper, use the following command (Linux):
+```
+java -jar match-wrapper.jar "$(cat wrapper-commands.json)"
+```
+
+Have a look at the MatchWrapper repo for more details about it:
+[https://github.com/riddlesio/match-wrapper](https://github.com/riddlesio/match-wrapper)
+
+*Note: if running on other systems, find how to put the content of wrapper-commands.json as
+argument when running the match-wrapper.jar*
