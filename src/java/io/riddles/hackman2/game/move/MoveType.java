@@ -96,9 +96,10 @@ public enum MoveType {
     }
 
     public static MoveType fromString(String string) {
-        return TYPE_MAP.get(string);
+        return TYPE_MAP.get(string.toLowerCase());
     }
 
+    @Override
     public String toString() {
         return this.name().toLowerCase();
     }
