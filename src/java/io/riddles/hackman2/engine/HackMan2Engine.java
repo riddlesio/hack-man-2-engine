@@ -127,7 +127,19 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         HackMan2Board board = new HackMan2Board(width, height, layout, enemySpawnPoints, gates);
 
         // Create player states
+        ArrayList<HackMan2PlayerState> playerStates = getInitialPlayerStates();
+
+        HackMan2State initialState = new HackMan2State(playerStates, board);
+
+        // Spawn initial items
+        board.spawnInitialObjects(initialState);
+
+        return initialState;
+    }
+
+    protected ArrayList<HackMan2PlayerState> getInitialPlayerStates() {
         ArrayList<HackMan2PlayerState> playerStates = new ArrayList<>();
+
         for (HackMan2Player player : this.playerProvider.getPlayers()) {
             int id = player.getId();
             Point startingCoordinate = getStartingCoordinates(id);
@@ -136,12 +148,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
             playerStates.add(playerState);
         }
 
-        HackMan2State initialState = new HackMan2State(playerStates, board);
-
-        // Spawn initial items
-        board.spawnInitialObjects(initialState);
-
-        return initialState;
+        return playerStates;
     }
 
     @Override
@@ -161,7 +168,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         return null;
     }
 
-    private String getDefaultFieldLayout() {
+    protected String getDefaultFieldLayout() {
         return  ".,.,.,x,.,.,.,.,.,.,.,.,.,.,.,x,.,.,.," +
                 ".,x,.,x,.,x,x,x,x,.,x,x,x,x,.,x,.,x,.," +
                 ".,x,.,.,.,x,.,.,.,.,.,.,.,x,.,.,.,x,.," +
@@ -179,7 +186,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
                 ".,.,.,.,.,.,.,.,x,x,x,.,.,.,.,.,.,.,.";
     }
 
-    private ArrayList<EnemySpawnPoint> getEnemySpawnPoints() {
+    protected ArrayList<EnemySpawnPoint> getEnemySpawnPoints() {
         ArrayList<EnemySpawnPoint> spawnPoints = new ArrayList<>();
 
         spawnPoints.add(new EnemySpawnPoint(new Point(0, 0), 0));
@@ -190,7 +197,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         return spawnPoints;
     }
 
-    private ArrayList<Gate> getGates() {
+    protected ArrayList<Gate> getGates() {
         ArrayList<Gate> gates = new ArrayList<>();
 
         Gate gate1 = new Gate(new Point(0, 7), MoveType.LEFT);
@@ -218,7 +225,7 @@ public class HackMan2Engine extends AbstractEngine<HackMan2Processor, HackMan2Pl
         }
     }
 
-    private void setRandomSeed() {
+    protected void setRandomSeed() {
         try {
             RANDOM = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException ex) {

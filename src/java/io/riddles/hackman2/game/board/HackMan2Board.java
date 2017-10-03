@@ -71,7 +71,7 @@ public class HackMan2Board extends Board {
         this.spawnedEnemies = 0;
         this.spawnedBombs = 0;
 
-        gates.forEach(gate -> this.gates.put(gate.toString(), gate));
+        gates.forEach(gate -> this.gates.put(gate.getCoordinate().toString(), gate));
     }
 
     public HackMan2Board(HackMan2Board board) {

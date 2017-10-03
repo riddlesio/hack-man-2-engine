@@ -51,7 +51,7 @@ class HackMan2BoardSpec extends Specification {
     def "test explode bombs"() {
 
         setup:
-        HackMan2Board board = new HackMan2Board(19, 15, layout, null)
+        HackMan2Board board = new HackMan2Board(19, 15, layout, null, new ArrayList<>())
         board.dropBomb(new Point(0, 0), 0)
         board.dropBomb(new Point(2, 0), 5)
         board.dropBomb(new Point(2, 1), 2)
