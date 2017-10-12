@@ -352,7 +352,9 @@ public class HackMan2Board extends Board {
 
         Bomb nextBomb = this.bombs.get(newCoordinate.toString());
 
-        if (nextBomb == null || explodingBombs.contains(nextBomb)) return;
+        if (nextBomb == null || explodingBombs.contains(nextBomb) || nextBomb.getTicks() == null) {
+            return;
+        }
 
         // explode bombs that are hit in the blast
         explodeBomb(nextBomb, explodingCoordinates, explodingBombs);

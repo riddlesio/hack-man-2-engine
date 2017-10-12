@@ -167,7 +167,7 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
         // Drop bomb
         if (move.getBombTicks() != null) {
             if (playerState.getBombs() > 0) {
-                board.dropBomb(newCoordinate, move.getBombTicks());
+                board.dropBomb(newCoordinate, move.getBombTicks() + 1); // +1 for tick this round
                 playerState.updateBombs(-1);
             } else {
                 move.setException(new InvalidMoveException("No bombs available"));

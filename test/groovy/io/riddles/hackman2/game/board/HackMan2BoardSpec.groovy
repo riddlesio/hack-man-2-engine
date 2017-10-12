@@ -19,6 +19,7 @@
 
 package io.riddles.hackman2.game.board
 
+import io.riddles.hackman2.game.item.Bomb
 import spock.lang.Specification
 
 import java.awt.Point
@@ -57,6 +58,8 @@ class HackMan2BoardSpec extends Specification {
         board.dropBomb(new Point(2, 1), 2)
         board.dropBomb(new Point(2, 2), 0)
         board.dropBomb(new Point(18, 0), 0)
+        Point coordinate = new Point(18, 5)
+        board.bombs.put(coordinate.toString(), new Bomb(coordinate, null))
 
         when:
         ArrayList<String> explosions = board.explodeBombs()
@@ -69,6 +72,6 @@ class HackMan2BoardSpec extends Specification {
                 "java.awt.Point[x=0,y=5], java.awt.Point[x=18,y=0], java.awt.Point[x=18,y=1], " +
                 "java.awt.Point[x=18,y=2], java.awt.Point[x=18,y=3], java.awt.Point[x=18,y=4], " +
                 "java.awt.Point[x=18,y=5], java.awt.Point[x=17,y=0], java.awt.Point[x=16,y=0]]"
-        board.getBombs().size() == 0
+        board.getBombs().size() == 1
     }
 }

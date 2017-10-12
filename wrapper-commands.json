@@ -14,7 +14,7 @@
       "command": "java -jar /home/jim/workspace/jim-mshackman-bot/build/libs/jim-mshackman-bot-1.0.0.jar"
     }],
     "engine": {
-      "command": "java -jar /home/jim/workspace/hackman2-engine-java/build/libs/hackman2-engine-java-1.0.0.jar",
+      "command": "java -jar /home/jim/workspace/hackman2-engine-java/build/libs/hackman2-engine-java-1.0.3.jar",
       "configuration": {}
     }
   }
