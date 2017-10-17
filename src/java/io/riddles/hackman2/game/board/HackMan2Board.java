@@ -120,7 +120,7 @@ public class HackMan2Board extends Board {
 
         this.enemySpawnPoints.forEach(spawnPoint -> addObjectToOutFields(outFields, spawnPoint));
         this.gates.forEach((key, gate) -> addObjectToOutFields(outFields, gate));
-        this.enemies.forEach(enemy -> addObjectToOutFields(outFields, enemy));
+        getAliveEnemies().forEach(enemy -> addObjectToOutFields(outFields, enemy));
         this.bombs.forEach((key, bomb) -> addObjectToOutFields(outFields, bomb));
         this.snippets.forEach((key, snippet) -> addObjectToOutFields(outFields, snippet));
 
@@ -176,9 +176,7 @@ public class HackMan2Board extends Board {
     }
 
     public void cleanUpEnemies() {
-        this.enemies = this.enemies.stream()
-                .filter(Enemy::isAlive)
-                .collect(Collectors.toCollection(ArrayList::new));
+        this.enemies = getAliveEnemies();
     }
 
     public void moveEnemies(HackMan2State state) {
@@ -288,7 +286,7 @@ public class HackMan2Board extends Board {
             Point previousCoord = previousState.getPlayerStateById(
                     playerState.getPlayerId()).getCoordinate();
 
-            for (Enemy enemy : this.enemies) {
+            for (Enemy enemy : getAliveEnemies()) {
                 Enemy previousEnemy = previousState.getBoard().getEnemyById(enemy.getId());
 
                 if (previousEnemy == null) continue;
@@ -306,12 +304,18 @@ public class HackMan2Board extends Board {
 
     private void positionCollideWithEnemies(HackMan2State state) {
         state.getPlayerStates().forEach(playerState ->
-                state.getBoard().getEnemies().stream()
+                state.getBoard().getAliveEnemies().stream()
                         .filter(enemy -> enemy.getCoordinate().equals(playerState.getCoordinate()))
                         .forEach(enemy -> {
                             hitPlayerWithEnemy(playerState);
                             enemy.kill(EnemyDeath.ATTACK);
                         }));
+    }
+
+    private ArrayList<Enemy> getAliveEnemies() {
+        return this.enemies.stream()
+                .filter(Enemy::isAlive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     protected ArrayList<String> explodeBombs() {
