@@ -195,8 +195,20 @@ public class HackMan2Board extends Board {
         positionCollideWithEnemies(state);
     }
 
+    public void spawnEnemies() {
+        for (EnemySpawnPoint spawnPoint : this.enemySpawnPoints) {
+            spawnPoint.reduceSpawnTime();
+
+            Enemy newEnemy = spawnPoint.spawnEnemy(this.spawnedEnemies);
+
+            if (newEnemy == null) continue;
+
+            this.enemies.add(newEnemy);
+            this.spawnedEnemies++;
+        }
+    }
+
     public void spawnObjects(HackMan2State state) {
-        spawnEnemies();
         startEnemySpawn(state);
         spawnSnippets(state);
         spawnBombs(state);
@@ -438,19 +450,6 @@ public class HackMan2Board extends Board {
                 .filter(enemy -> enemy.getId() == id)
                 .findFirst()
                 .orElse(null);
-    }
-
-    private void spawnEnemies() {
-        for (EnemySpawnPoint spawnPoint : this.enemySpawnPoints) {
-            spawnPoint.reduceSpawnTime();
-
-            Enemy newEnemy = spawnPoint.spawnEnemy(this.spawnedEnemies);
-
-            if (newEnemy == null) continue;
-
-            this.enemies.add(newEnemy);
-            this.spawnedEnemies++;
-        }
     }
 
     // Based on the amount of snippets

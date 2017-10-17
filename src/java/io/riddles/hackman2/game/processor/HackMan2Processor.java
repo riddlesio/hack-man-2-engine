@@ -117,8 +117,13 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
         // Move the players
         executePlayerMoves(nextState);
 
-        // Calculate changes due to collisions
+        // Perform object pickups
         board.performPickups(nextState);
+
+        // Spawn enemies from spawnpoints (before collisions)
+        board.spawnEnemies();
+
+        // Calculate changes due to collisions
         board.performCollisions(inputState, nextState);
 
         // Spawn all new objects
