@@ -182,7 +182,8 @@ public class HackMan2Board extends Board {
     }
 
     public void moveEnemies(HackMan2State state) {
-        this.enemies.forEach(enemy -> enemy.performMovement(state));
+        this.enemies.forEach(enemy -> enemy.getNewCoordinate(state));
+        this.enemies.forEach(Enemy::performMovement);
     }
 
     public void performPickups(HackMan2State state) {
@@ -251,7 +252,7 @@ public class HackMan2Board extends Board {
         this.bombs.forEach((key, bomb) -> bomb.tick());
         ArrayList<String> explodingCoordinates = explodeBombs();
 
-        blastEnemies(state, explodingCoordinates);
+        blastEnemies(explodingCoordinates);
         blastPlayers(state, explodingCoordinates);
     }
 
@@ -297,7 +298,7 @@ public class HackMan2Board extends Board {
 
                 if (coord.equals(previousEnemyCoord) && enemyCoord.equals(previousCoord)) {
                     hitPlayerWithEnemy(playerState);
-                    enemy.kill(state, EnemyDeath.ATTACK);
+                    enemy.kill(EnemyDeath.ATTACK);
                 }
             }
         }
@@ -309,7 +310,7 @@ public class HackMan2Board extends Board {
                         .filter(enemy -> enemy.getCoordinate().equals(playerState.getCoordinate()))
                         .forEach(enemy -> {
                             hitPlayerWithEnemy(playerState);
-                            enemy.kill(state, EnemyDeath.ATTACK);
+                            enemy.kill(EnemyDeath.ATTACK);
                         }));
     }
 
@@ -360,10 +361,10 @@ public class HackMan2Board extends Board {
         explodeBomb(nextBomb, explodingCoordinates, explodingBombs);
     }
 
-    private void blastEnemies(HackMan2State state, ArrayList<String> explodingCoordinates) {
+    private void blastEnemies(ArrayList<String> explodingCoordinates) {
         this.enemies.stream()
                 .filter(enemy -> explodingCoordinates.contains(enemy.getCoordinate().toString()))
-                .forEach(enemy -> enemy.kill(state, EnemyDeath.BOMBED));
+                .forEach(enemy -> enemy.kill(EnemyDeath.BOMBED));
     }
 
     private void blastPlayers(HackMan2State state, ArrayList<String> explodingCoordinates) {

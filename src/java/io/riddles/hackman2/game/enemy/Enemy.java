@@ -40,6 +40,7 @@ public class Enemy extends HackMan2Object {
     private EnemyDeath deathType;
     private MoveType direction;
     private AbstractEnemyAI enemyAI;
+    private Point newCoordinate;  // Stores new coordinate after moving
 
     public Enemy(int id, Point coordinate, int type) {
         super(coordinate);
@@ -77,12 +78,17 @@ public class Enemy extends HackMan2Object {
         return String.format("E%d", this.type);
     }
 
-    public void performMovement(HackMan2State state) {
-        Point c = this.enemyAI.transform(this, state);
-        setCoordinate(c);
+    public void getNewCoordinate(HackMan2State state) {
+        this.newCoordinate = this.enemyAI.transform(this, state);
     }
 
-    public void kill(HackMan2State state, EnemyDeath deathType) {
+    public void performMovement() {
+        this.direction = getNewDirection(this.coordinate, this.newCoordinate);
+        this.coordinate = this.newCoordinate;
+        this.newCoordinate = null;
+    }
+
+    public void kill(EnemyDeath deathType) {
         this.isAlive = false;
         this.deathType = deathType;
     }
@@ -105,11 +111,6 @@ public class Enemy extends HackMan2Object {
 
     public EnemyDeath getDeathType() {
         return this.deathType;
-    }
-
-    private void setCoordinate(Point coordinate) {
-        this.direction = getNewDirection(this.coordinate, coordinate);
-        this.coordinate = coordinate;
     }
 
     private MoveType getNewDirection(Point oldCoordinate, Point newCoordinate) {
