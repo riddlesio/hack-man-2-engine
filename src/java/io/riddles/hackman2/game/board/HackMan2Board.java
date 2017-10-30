@@ -292,13 +292,14 @@ public class HackMan2Board extends Board {
     }
 
     private void swapCollideWithEnemies(HackMan2State previousState, HackMan2State state) {
+        ArrayList<Enemy> aliveEnemies = getAliveEnemies();
 
         for (HackMan2PlayerState playerState : state.getPlayerStates()) {
             Point coord = playerState.getCoordinate();
             Point previousCoord = previousState.getPlayerStateById(
                     playerState.getPlayerId()).getCoordinate();
 
-            for (Enemy enemy : getAliveEnemies()) {
+            for (Enemy enemy : aliveEnemies) {
                 Enemy previousEnemy = previousState.getBoard().getEnemyById(enemy.getId());
 
                 if (previousEnemy == null) continue;
@@ -315,8 +316,10 @@ public class HackMan2Board extends Board {
     }
 
     private void positionCollideWithEnemies(HackMan2State state) {
+        ArrayList<Enemy> aliveEnemies = state.getBoard().getAliveEnemies();
+
         state.getPlayerStates().forEach(playerState ->
-                state.getBoard().getAliveEnemies().stream()
+                aliveEnemies.stream()
                         .filter(enemy -> enemy.getCoordinate().equals(playerState.getCoordinate()))
                         .forEach(enemy -> {
                             hitPlayerWithEnemy(playerState);
