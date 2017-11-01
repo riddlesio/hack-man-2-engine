@@ -215,7 +215,15 @@ public class HackMan2Board extends Board {
     }
 
     public void dropBomb(Point coordinate, int ticks) {
-        this.bombs.put(coordinate.toString(), new Bomb(coordinate, ticks));
+        boolean drop = true;
+        if (this.bombs.containsKey(coordinate.toString()) &&
+                this.bombs.get(coordinate.toString()).getTicks() != null &&
+                ticks > this.bombs.get(coordinate.toString()).getTicks()) {
+            drop = false;
+        }
+        if (drop) {
+            this.bombs.put(coordinate.toString(), new Bomb(coordinate, ticks));
+        }
     }
 
     public ArrayList<Enemy> getEnemies() {
