@@ -5,7 +5,7 @@ apply plugin: 'groovy'
 apply plugin: 'application'
 apply plugin: 'com.jfrog.artifactory'
 
-version = '1.0.5'
+version = '1.0.6'
 
 mainClassName = 'io.riddles.hackman2.HackMan2'
 sourceCompatibility = 1.8

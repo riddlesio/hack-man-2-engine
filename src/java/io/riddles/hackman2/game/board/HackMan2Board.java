@@ -214,8 +214,25 @@ public class HackMan2Board extends Board {
         spawnBombs(state);
     }
 
-    public void dropBomb(Point coordinate, int ticks) {
+    // Returns true if the amount of collected bombs should be decreased
+    public boolean dropBomb(Point coordinate, int ticks) {
+        boolean decreaseAmount = true;
+
+        if (this.bombs.containsKey(coordinate.toString())) {
+            Bomb existingBomb = this.bombs.get(coordinate.toString());
+
+            if (existingBomb.getTicks() == null) {
+                // Putting a bomb on an unarmed bomb effectively picks it up
+                decreaseAmount = false;
+            } else if (existingBomb.getTicks() < ticks) {
+                // Don't 'overwrite' an already armed bomb with lower amount of ticks
+                return true;
+            }
+        }
+
         this.bombs.put(coordinate.toString(), new Bomb(coordinate, ticks));
+
+        return decreaseAmount;
     }
 
     public ArrayList<Enemy> getEnemies() {
