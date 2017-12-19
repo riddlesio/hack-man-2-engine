@@ -64,6 +64,7 @@ public class HackMan2Serializer extends AbstractGameSerializer<HackMan2Processor
 
         game.put("characters", characters);
         game.put("states", states);
+        game.put("engineVersion", HackMan2Serializer.class.getPackage().getImplementationVersion());
 
         return game.toString();
     }

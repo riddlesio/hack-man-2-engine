@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import io.riddles.hackman2.engine.HackMan2Engine;
@@ -179,6 +180,12 @@ public class HackMan2Board extends Board {
         this.enemies = getAliveEnemies();
     }
 
+    public void cleanUpBombs() {
+        this.bombs = this.bombs.entrySet().stream()
+                .filter(e -> e.getValue().getTicks() == null || e.getValue().getTicks() > 0)
+                .collect(HashMap::new, (m, e) -> m.put(e.getKey(), e.getValue()), Map::putAll);
+    }
+
     public void moveEnemies(HackMan2State state) {
         this.enemies.forEach(enemy -> enemy.getNewCoordinate(state));
         this.enemies.forEach(Enemy::performMovement);
@@ -277,6 +284,7 @@ public class HackMan2Board extends Board {
 
     private void detonateBombs(HackMan2State state) {
         this.bombs.forEach((key, bomb) -> bomb.tick());
+
         ArrayList<String> explodingCoordinates = explodeBombs();
 
         blastEnemies(explodingCoordinates);
@@ -357,11 +365,6 @@ public class HackMan2Board extends Board {
         this.bombs.entrySet().stream()
                 .filter(e -> e.getValue().getTicks() != null && e.getValue().getTicks() == 0)
                 .forEach(e -> explodeBomb(e.getValue(), explodingCoordinates, explodedBombs));
-
-        // Remove all exploded bombs at the end
-        for (Bomb exploded : explodedBombs) {
-            this.bombs.remove(exploded.getCoordinate().toString());
-        }
 
         return explodingCoordinates;
     }

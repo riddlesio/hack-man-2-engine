@@ -99,8 +99,9 @@ public class HackMan2Processor extends SimpleProcessor<HackMan2State, HackMan2Pl
         HackMan2State nextState = inputState.createNextState(roundNumber);
         HackMan2Board board = nextState.getBoard();
 
-        // Clean up enemies from previous round (i.e. remove dead ones)
+        // Clean up enemies and bombs from previous round (i.e. remove dead ones)
         board.cleanUpEnemies();
+        board.cleanUpBombs();
 
         // Send updates and get all moves
         for (HackMan2PlayerState playerState : nextState.getPlayerStates()) {
