@@ -63,6 +63,7 @@ class HackMan2BoardSpec extends Specification {
 
         when:
         ArrayList<String> explosions = board.explodeBombs()
+        board.cleanUpBombs()
 
         then:
         explosions.toString() == "[java.awt.Point[x=0,y=0], java.awt.Point[x=1,y=0], " +

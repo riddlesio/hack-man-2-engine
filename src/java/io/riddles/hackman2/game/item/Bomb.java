@@ -62,4 +62,8 @@ public class Bomb extends HackMan2Object {
     public Integer getTicks() {
         return this.ticks;
     }
+
+    public void setExploding() {
+        this.ticks = 0;
+    }
 }

@@ -9,12 +9,12 @@
   },
   "match": {
     "bots": [{
-      "command": "mono /home/jim/Downloads/euler_temp/run_ai"
+      "command": "java -jar /home/jim/workspace/hackman2-starterbot-java/build/libs/hackman2-starterbot-java-1.0.0.jar"
     },{
-      "command": "mono /home/jim/Downloads/euler_temp/run_ai"
+      "command": "java -jar /home/jim/workspace/hackman2-starterbot-java/build/libs/hackman2-starterbot-java-1.0.0.jar"
     }],
     "engine": {
-      "command": "java -jar /home/jim/workspace/hackman2-engine-java/build/libs/hackman2-engine-java-1.0.7.jar",
+      "command": "java -jar /home/jim/workspace/hackman2-engine-java/build/libs/hackman2-engine-java-1.0.8.jar",
       "configuration": {}
     }
   }

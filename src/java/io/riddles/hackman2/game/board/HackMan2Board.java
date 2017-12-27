@@ -360,44 +360,43 @@ public class HackMan2Board extends Board {
 
     protected ArrayList<String> explodeBombs() {
         ArrayList<String> explodingCoordinates = new ArrayList<>();
-        ArrayList<Bomb> explodedBombs = new ArrayList<>();
 
         this.bombs.entrySet().stream()
                 .filter(e -> e.getValue().getTicks() != null && e.getValue().getTicks() == 0)
-                .forEach(e -> explodeBomb(e.getValue(), explodingCoordinates, explodedBombs));
+                .forEach(e -> explodeBomb(e.getValue(), explodingCoordinates));
 
         return explodingCoordinates;
     }
 
-    private void explodeBomb(Bomb bomb, ArrayList<String> explodingCoordinates, ArrayList<Bomb> explodingBombs) {
+    private void explodeBomb(Bomb bomb, ArrayList<String> explodingCoordinates) {
         Point coordinate = bomb.getCoordinate();
 
-        explodingBombs.add(bomb);
         addExplodingCoordinate(coordinate, explodingCoordinates);
 
-        explodeInDirection(coordinate, new Point(0, -1), explodingCoordinates, explodingBombs);
-        explodeInDirection(coordinate, new Point(1, 0), explodingCoordinates, explodingBombs);
-        explodeInDirection(coordinate, new Point(0, 1), explodingCoordinates, explodingBombs);
-        explodeInDirection(coordinate, new Point(-1, 0), explodingCoordinates, explodingBombs);
+        explodeInDirection(coordinate, new Point(0, -1), explodingCoordinates);
+        explodeInDirection(coordinate, new Point(1, 0), explodingCoordinates);
+        explodeInDirection(coordinate, new Point(0, 1), explodingCoordinates);
+        explodeInDirection(coordinate, new Point(-1, 0), explodingCoordinates);
     }
 
-    private void explodeInDirection(Point coordinate, Point direction,
-                                    ArrayList<String> explodingCoordinates, ArrayList<Bomb> explodingBombs) {
+    private void explodeInDirection(Point coordinate, Point direction, ArrayList<String> explodingCoordinates) {
         Point newCoordinate = new Point(coordinate.x + direction.x, coordinate.y + direction.y);
 
         if (!isCoordinateValid(newCoordinate)) return;
 
         addExplodingCoordinate(newCoordinate, explodingCoordinates);
-        explodeInDirection(newCoordinate, direction, explodingCoordinates, explodingBombs); // recursive call
+        explodeInDirection(newCoordinate, direction, explodingCoordinates); // recursive call
 
         Bomb nextBomb = this.bombs.get(newCoordinate.toString());
 
-        if (nextBomb == null || explodingBombs.contains(nextBomb) || nextBomb.getTicks() == null) {
+        if (nextBomb == null || nextBomb.getTicks() == null || nextBomb.getTicks() <= 0) {
             return;
         }
 
+        nextBomb.setExploding();
+
         // explode bombs that are hit in the blast
-        explodeBomb(nextBomb, explodingCoordinates, explodingBombs);
+        explodeBomb(nextBomb, explodingCoordinates);
     }
 
     private void blastEnemies(ArrayList<String> explodingCoordinates) {
