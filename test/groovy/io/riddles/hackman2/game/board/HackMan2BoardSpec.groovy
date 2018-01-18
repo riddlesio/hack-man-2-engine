@@ -68,9 +68,9 @@ class HackMan2BoardSpec extends Specification {
         then:
         explosions.toString() == "[java.awt.Point[x=0,y=0], java.awt.Point[x=1,y=0], " +
                 "java.awt.Point[x=2,y=0], java.awt.Point[x=2,y=1], java.awt.Point[x=2,y=2], " +
-                "java.awt.Point[x=3,y=2], java.awt.Point[x=4,y=2], java.awt.Point[x=0,y=1], " +
-                "java.awt.Point[x=0,y=2], java.awt.Point[x=0,y=3], java.awt.Point[x=0,y=4], " +
-                "java.awt.Point[x=0,y=5], java.awt.Point[x=18,y=0], java.awt.Point[x=18,y=1], " +
+                "java.awt.Point[x=0,y=1], java.awt.Point[x=0,y=2], java.awt.Point[x=0,y=3], " +
+                "java.awt.Point[x=0,y=4], java.awt.Point[x=0,y=5], java.awt.Point[x=3,y=2], " +
+                "java.awt.Point[x=4,y=2], java.awt.Point[x=18,y=0], java.awt.Point[x=18,y=1], " +
                 "java.awt.Point[x=18,y=2], java.awt.Point[x=18,y=3], java.awt.Point[x=18,y=4], " +
                 "java.awt.Point[x=18,y=5], java.awt.Point[x=17,y=0], java.awt.Point[x=16,y=0]]"
         board.getBombs().size() == 1
